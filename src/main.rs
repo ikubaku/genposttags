@@ -42,7 +42,6 @@ async fn main() -> Result<(), anyhow::Error> {
     let args = Args::parse();
     if let Some(log_path) = args.log_path {
         let _logger = Logger::try_with_str("info")?
-            .log_to_stderr()
             .log_to_file(FileSpec::try_from(log_path)?)
             .write_mode(WriteMode::BufferAndFlush)
             .start()?;
