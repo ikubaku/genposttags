@@ -1,0 +1,4 @@
+database_url = "mysql://username:password@localhost:3306/database_name"
+#only_these_tags = ["cpp", "iot"]
+destination_table_name = "PostTags"
+allow_drop_destination_table = false
