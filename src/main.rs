@@ -120,21 +120,29 @@ async fn main() -> Result<(), anyhow::Error> {
         let type_id = hist.post_history_type_id;
         let post_id = hist.post_id;
         let Some(creation_date) = hist.creation_date else { warn!("CreationDate should not be null for ID: {}",  hist.id); continue; };
-        let Some(text) = hist.text else { warn!("Text should not be null for ID: {}", hist.id); continue; };
+        let maybe_text = hist.text;
         if let Some(this_last_update) = last_update.get(&post_id) {
             if *this_last_update < creation_date {
                 if type_id == 3 {
                     warn!("More than one Initial Tags history event exist for PostId: {}. Overwriting previous records.", post_id);
                 }
                 last_update.insert(post_id, creation_date);
-                post_tags_by_name_list.insert(post_id, text);
+                if let Some(text) = maybe_text {
+                    post_tags_by_name_list.insert(post_id, text);
+                } else {
+                    post_tags_by_name_list.insert(post_id, String::from(""));
+                }
             }
         } else {
             if type_id != 3 {
                 warn!("No Initial Tags history event present before this ID: {} for PostId: {}", hist.id, post_id);
             }
             last_update.insert(post_id, creation_date);
-            post_tags_by_name_list.insert(post_id, text);
+            if let Some(text) = maybe_text {
+                post_tags_by_name_list.insert(post_id, text);
+            } else {
+                post_tags_by_name_list.insert(post_id, String::from(""));
+            }
         }
     }
     spinner.finish();
